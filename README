@@ -1,0 +1,32 @@
+libamqp-php readme.
+
+libamqp-php is Copyright 2011 StormMQ Limited.
+
+libamqp-php is licensed under the Apache License, Version 2.0 (the "License");
+you may not use libamqp-php except in compliance with the License. A copy of
+the License can be found in the file LICENSE distributed with this
+package, or you may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Dependencies:
+
+Libamqp-php is a PHP wrapper for libamqp. The intention is to provide a thread 
+safe AMQP 1.0 client for PHO versions 5.3.2 and 5.3.5.
+
+Authors:
+Eamon Walshe <eamon.walshe@stormmq.com>
+Raphael Cohn <raphael.cohn@stormmq.com>
+
+Contributors:
+
+References:
+
+StormMQ Limited UK Office:
+Gateshead int'l Business Centre, Mulgrave Terrace, Gateshead, NE8 1AN, United Kingdom
+Telephone: +44 845 3712 567
+
+StormMQ Limited registered office:
+78 Broomfield Road, Chelmsford, Essex, CM1 1SS, United Kingdom
+StormMQ Limited is Registered in England and Wales under Company Number 07175657
+StormMQ.com
