@@ -4,7 +4,7 @@ namespace libamqp;
 
 use \InvalidArgumentException;
 
-require_once('CompositeType.php');
+require_once('KnownCompositeType.php');
 require_once('map.php');
 require_once('section.php');
 require_once('Value.php');
@@ -25,7 +25,7 @@ require_once('symbol.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-abstract class annotations extends CompositeType implements section
+abstract class annotations extends KnownCompositeType implements section
 {
 	/**
 	 * @param array $annotations

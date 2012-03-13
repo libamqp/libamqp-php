@@ -2,6 +2,7 @@
 
 require_once('libamqp/libamqp.php');
 
+use \libamqp\sending_link;
 use \libamqp\ushort, \libamqp\boolean, \libamqp\string, \libamqp\binary, \libamqp\timestamp, \libamqp\ubyte, \libamqp\uint, \libamqp\byte, \libamqp\char;
 use \libamqp\header, \libamqp\delivery_annotations, \libamqp\message_annotations, \libamqp\properties, \libamqp\application_properties;
 use \libamqp\data, \libamqp\amqp_value, \libamqp\amqp_sequence;
@@ -15,51 +16,57 @@ use \libamqp\footer, \libamqp\delivery_state, \libamqp\outcome, \libamqp\receive
 		- This draft API does not address any error handling, eg link-redirect
 		- Link recovery is not supported (and partial message recovery would be exceedingly hard to do)
 	4 Sends a data(message)
+
+	Sending messages is a blocking operation; any invoked callbacks, eg for exactly-once messaging, happen within
+	the send() function. This avoids extremely nasty problems involving PHP's garbage collection and page lifetimes.
+
+	Obviously, this is sub-optimal, but then again, PHP has no real concept of asynchronous programming or threading.
 */
-libamqp\send("message");
+$link = new sending_link("link-name", NULL);
+$link->send("message");
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends an amqp-value(null)
 */
-libamqp\send(NULL);
+$link->send(NULL);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends an amqp-value(boolean(TRUE))
 */
-libamqp\send(TRUE);
+$link->send(TRUE);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends an amqp-value(long(56789))
 */
-libamqp\send(56789);
+$link->send(56789);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends an amqp-value(double(14.56))
 */
-libamqp\send(14.56);
+$link->send(14.56);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends an amqp-value(ushort(456))
 */
-libamqp\send(new ushort(456));
+$link->send(new ushort(456));
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends an arbitary amqp-value, in this case, amqp-value(ushort(456))
 */
-libamqp\send(new amqp_value(new ushort(456)));
+$link->send(new amqp_value(new ushort(456)));
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends a data(message)
 */
 $binary_data = "message";
-libamqp\send(new data($binary_data));
+$link->send(new data($binary_data));
 
 /*
 	1 (Restablishes connection, session or link if necessary)
@@ -68,7 +75,7 @@ libamqp\send(new data($binary_data));
 $amqp_sequence = new amqp_sequence();
 $amqp_sequence[0] = boolean::TRUE();
 $amqp_sequence[2] = new string("hello");
-libamqp\send($amqp_sequence);
+$link->send($amqp_sequence);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
@@ -81,7 +88,7 @@ $amqp_data_sections = array
 	$section0,
 	$section1
 );
-libamqp\send($amqp_data_sections);
+$link->send($amqp_data_sections);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
@@ -98,19 +105,19 @@ $amqp_data_sections = array
 	$section0,
 	$section1
 );
-libamqp\send($amqp_data_sections);
+$link->send($amqp_data_sections);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends header and binary message
 */
-libamqp\send("messsage", new header(true, 6));
+$link->send("messsage", new header(true, 6));
 
 /*
 	1 (Restablishes connection, session or link if necessary)
 	2 Sends header, delivery-annotations, message-annotations, properties, application-properties and binary message
 */
-libamqp\send
+$link->send
 (
 	"messsage",
 	new header
@@ -172,7 +179,7 @@ $footer_callbacks = array
 		$footer->set('x-hmac-sha256', new binary(hash_hmac('sha256', $encoded_data_binary_string, $key, TRUE)));
 	},
 );
-libamqp\send("message", NULL, NULL, NULL, NULL, NULL, $footer_callbacks);
+$link->send("message", NULL, NULL, NULL, NULL, NULL, $footer_callbacks);
 
 
 /*
@@ -208,7 +215,7 @@ $delivery_state_callback = function(delivery_state &$delivery_state)
 			throw new BadFunctionCallException("Unknown outcome class $delivery_state");
 	}
 };
-libamqp\send("message", NULL, NULL, NULL, NULL, NULL, array(), constant('LIBAMQP_DELIVERY_MODE_AT_LEAST_ONCE'), $delivery_state_callback);
+$link->send("message", NULL, NULL, NULL, NULL, NULL, array(), constant('LIBAMQP_DELIVERY_MODE_AT_LEAST_ONCE'), $delivery_state_callback);
 
 
 /*
@@ -240,7 +247,7 @@ $delivery_state_callback = function(delivery_state &$delivery_state)
 			throw new BadFunctionCallException("Unknown outcome class $delivery_state");
 	}
 };
-libamqp\send("message", NULL, NULL, NULL, NULL, NULL, array(), constant('LIBAMQP_DELIVERY_MODE_EXACTLY_ONCE'), $delivery_state_callback);
+$link->send("message", NULL, NULL, NULL, NULL, NULL, array(), constant('LIBAMQP_DELIVERY_MODE_EXACTLY_ONCE'), $delivery_state_callback);
 
 
 ?>

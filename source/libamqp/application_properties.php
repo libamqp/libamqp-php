@@ -4,7 +4,7 @@ namespace libamqp;
 
 use \InvalidArgumentException;
 
-require_once('CompositeType.php');
+require_once('KnownCompositeType.php');
 require_once('section.php');
 require_once('map.php');
 require_once('Value.php');
@@ -23,7 +23,7 @@ require_once('_list.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-class application_properties extends CompositeType implements section
+class application_properties extends KnownCompositeType implements section
 {
 	protected static $descriptor_name;
 	protected static $descriptor_code;

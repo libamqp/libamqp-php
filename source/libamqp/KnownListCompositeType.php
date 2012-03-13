@@ -4,7 +4,7 @@ namespace libamqp;
 
 use \BadMethodCallException, \InvalidArgumentException, \OutOfBoundsException;
 
-require_once('CompositeType.php');
+require_once('KnownCompositeType.php');
 require_once('symbol.php');
 require_once('ulong.php');
 require_once('_list.php');
@@ -21,7 +21,7 @@ require_once('null.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-abstract class KnownListCompositeType extends CompositeType
+abstract class KnownListCompositeType extends KnownCompositeType
 {
 	/**
 	 *

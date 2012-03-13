@@ -22,10 +22,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="libamqp.php" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="libamqp.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/libamqp/libamqp.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="210" column="12" selection-start="7095" selection-end="7095" vertical-scroll-proportion="0.33406115">
+            <state line="82" column="0" selection-start="2399" selection-end="2399" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sending_link.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/source/libamqp/sending_link.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="191" column="16" selection-start="6673" selection-end="6673" vertical-scroll-proportion="2.0851529">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="example.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/example.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="44" selection-start="1328" selection-end="1328" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -46,21 +64,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/source/libamqp/delivery_state.php" />
-        <option value="$PROJECT_DIR$/source/libamqp/outcome.php" />
         <option value="$PROJECT_DIR$/source/libamqp/fields.php" />
         <option value="$PROJECT_DIR$/source/libamqp/footer.php" />
         <option value="$PROJECT_DIR$/source/libamqp/annotations.php" />
         <option value="$PROJECT_DIR$/source/libamqp/delivery_annotations.php" />
         <option value="$PROJECT_DIR$/source/libamqp/message_annotations.php" />
-        <option value="$PROJECT_DIR$/source/example.php" />
-        <option value="$PROJECT_DIR$/source/libamqp/libamqp.php" />
         <option value="$PROJECT_DIR$/source/libamqp/KnownListCompositeType.php" />
         <option value="$PROJECT_DIR$/source/libamqp/accepted.php" />
         <option value="$PROJECT_DIR$/source/libamqp/received.php" />
         <option value="$PROJECT_DIR$/source/libamqp/rejected.php" />
         <option value="$PROJECT_DIR$/source/libamqp/released.php" />
         <option value="$PROJECT_DIR$/source/libamqp/modified.php" />
+        <option value="$PROJECT_DIR$/source/libamqp/CompositeType.php" />
+        <option value="$PROJECT_DIR$/source/libamqp/link.php" />
+        <option value="$PROJECT_DIR$/source/libamqp/libamqp.php" />
+        <option value="$PROJECT_DIR$/source/example.php" />
+        <option value="$PROJECT_DIR$/source/libamqp/sending_link.php" />
       </list>
     </option>
   </component>
@@ -306,27 +325,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/source/libamqp/fields.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="51" selection-start="141" selection-end="141" vertical-scroll-proportion="0.10814708">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/libamqp/delivery_state.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="10" selection-start="423" selection-end="423" vertical-scroll-proportion="0.16222063">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/libamqp/CompositeType.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="29" selection-start="749" selection-end="749" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/source/libamqp/footer.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="30" column="23" selection-start="812" selection-end="812" vertical-scroll-proportion="0.0">
@@ -351,13 +349,6 @@
     <entry file="file://$PROJECT_DIR$/source/libamqp/message_annotations.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="28" column="60" selection-start="816" selection-end="816" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/example.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="210" column="61" selection-start="5288" selection-end="5288" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -411,9 +402,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/source/libamqp/KnownCompositeType.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="26" selection-start="602" selection-end="602" vertical-scroll-proportion="0.22710887">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/libamqp/null.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="0" selection-start="0" selection-end="2302" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/example.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="44" selection-start="1328" selection-end="1328" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/source/libamqp/libamqp.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="210" column="12" selection-start="7095" selection-end="7095" vertical-scroll-proportion="0.33406115">
+        <state line="82" column="0" selection-start="2399" selection-end="2399" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/libamqp/sending_link.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="191" column="16" selection-start="6673" selection-end="6673" vertical-scroll-proportion="2.0851529">
           <folding />
         </state>
       </provider>

@@ -4,7 +4,7 @@ namespace libamqp;
 
 use \InvalidArgumentException;
 
-require_once('CompositeType.php');
+require_once('KnownCompositeType.php');
 require_once('annotations.php');
 
 /**

@@ -2,7 +2,7 @@
 
 namespace libamqp;
 
-require_once('CompositeType.php');
+require_once('KnownCompositeType.php');
 require_once('application_data.php');
 require_once('Value.php');
 
@@ -17,7 +17,7 @@ require_once('Value.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-class amqp_value extends CompositeType implements application_data
+class amqp_value extends KnownCompositeType implements application_data
 {
 	protected static $descriptor_name;
 	protected static $descriptor_code;

@@ -19,7 +19,7 @@ require_once('ulong.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-abstract class CompositeType implements Value
+abstract class KnownCompositeType implements Value
 {
 	protected $value;
 

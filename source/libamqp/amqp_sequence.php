@@ -4,7 +4,7 @@ namespace libamqp;
 
 use \ArrayAccess;
 
-require_once('CompositeType.php');
+require_once('KnownCompositeType.php');
 require_once('application_data.php');
 require_once('_list.php');
 
@@ -19,7 +19,7 @@ require_once('_list.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-class amqp_sequence extends CompositeType implements application_data, ArrayAccess
+class amqp_sequence extends KnownCompositeType implements application_data, ArrayAccess
 {
 	protected static $descriptor_name;
 	protected static $descriptor_code;
