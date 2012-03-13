@@ -65,8 +65,20 @@ require_once('data.php');
 require_once('amqp_sequence.php');
 require_once('amqp_value.php');
 require_once('properties.php');
+require_once('footer.php');
 
+require_once('error.php');
 require_once('fields.php');
+
+require_once('delivery_state.php');
+require_once('outcome.php');
+require_once('received.php');
+require_once('accepted.php');
+require_once('rejected.php');
+require_once('released.php');
+require_once('modified.php');
+require_once('modified.php');
+
 
 /**
  * Use an instance of this as a callback for at-least-once and exactly-once messaging
@@ -103,39 +115,10 @@ abstract class sender_settlement
 	}
 
 	/**
-	 * @param uint $section_number
-	 * @param ulong $section_offset
-	 */
-	public function received(uint &$section_number, ulong &$section_offset)
-	{
-	}
-
-	/**
-	 *
-	 */
-	public abstract function accepted();
-
-	/**
 	 * @abstract
-	 * @param symbol $condition
-	 * @param \string|NULL $condition
-	 * @param fields|NULL $fields
+	 * @param delivery_state $delivery_state
 	 */
-	public abstract function rejected(&$condition, &$description, fields &$fields = NULL);
-
-	/**
-	 *
-	 */
-	public abstract function released();
-
-	/**
-	 * @abstract
-	 * @param bool $delivery_failed
-	 * @param bool $undeliverable_here
-	 * @param fields|NULL $fields
-	 */
-	public abstract function modified($delivery_failed, $undeliverable_here, fields &$fields = NULL);
-
+	public abstract function called_back(delivery_state &$delivery_state);
 }
 
 /**
@@ -156,7 +139,7 @@ abstract class sender_settlement
  * @param properties|NULL $properties
  * @param application_properties|NULL $application_properties
  */
-function send($application_data, header &$header = NULL, delivery_annotations &$delivery_annotations = NULL, message_annotations &$message_annotations = NULL, properties &$properties = NULL, application_properties &$application_properties = NULL, sender_settlement &$sender_settlement = NULL)
+function send($application_data, header &$header = NULL, delivery_annotations &$delivery_annotations = NULL, message_annotations &$message_annotations = NULL, properties &$properties = NULL, application_properties &$application_properties = NULL, $exactly_once = FALSE, $delivery_state_callback = NULL)
 {
 	if (is_null($application_data))
 	{
@@ -216,6 +199,11 @@ function send($application_data, header &$header = NULL, delivery_annotations &$
 		throw new InvalidArgumentException("application_data must be either NULL (maps to libamqp\null), int (maps to AmqpLong) bool (maps to AmqpBoolean,) string (a byte array), Value or an array of application_data");
 	}
 
+	if ($exactly_once && is_null($delivery_state_callback))
+	{
+		throw new InvalidArgumentException("exactly_once is TRUE but there is no delivery_state_callback");
+	}
+
 	/*
 	 * Link settings negotiation:-
 	 *  - link is negotiated as mixed
@@ -229,6 +217,8 @@ function send($application_data, header &$header = NULL, delivery_annotations &$
 	 * 	- presence of settlement object is used
 	 *    - if link does not support settlement object, then throw an exception
 	 */
+
+
 
 	echo "Sending Message\n";
 	echo "header: $header\n";

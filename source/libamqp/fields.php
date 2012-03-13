@@ -8,7 +8,7 @@ use \InvalidArgumentException;
 require_once('map.php');
 
 /**
- * Represents an AMQP Error's fields
+ * Represents an AMQP Error's or an AMQP Modified's fields
  *
  * @category Networking
  * @package libamqp
