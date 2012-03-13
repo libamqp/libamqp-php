@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="example.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" path="$PROJECT_DIR$/source/example.php">
+    <RunnerSettings RunnerId="PhpRunner" />
+    <ConfigurationWrapper RunnerId="PhpRunner" />
+    <method />
+  </configuration>
+</component>
