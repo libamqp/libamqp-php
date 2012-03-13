@@ -6,11 +6,6 @@ use \InvalidArgumentException;
 
 require_once('CompositeType.php');
 require_once('annotations.php');
-require_once('map.php');
-require_once('Value.php');
-require_once('map.php');
-require_once('_array.php');
-require_once('_list.php');
 
 /**
  * Represents an AMQP Message Format message-annotations section

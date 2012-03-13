@@ -8,7 +8,7 @@ require_once('CompositeType.php');
 require_once('annotations.php');
 
 /**
- * Represents an AMQP Message Format delivery-annotations section
+ * Represents an AMQP Message Format footer section
  *
  * @category Networking
  * @package libamqp
@@ -18,7 +18,7 @@ require_once('annotations.php');
  * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
  * @version Release: @package_version@
  */
-class delivery_annotations extends annotations
+class footer extends annotations
 {
 	protected static $descriptor_name;
 	protected static $descriptor_code;
@@ -36,6 +36,6 @@ class delivery_annotations extends annotations
 require_once('symbol.php');
 require_once('ulong.php');
 
-delivery_annotations::init(new symbol("amqp:delivery-annotations:map"), ulong::instance_from_domain(0x00000000, 0x00000071));
+footer::init(new symbol("amqp:footer:map"), ulong::instance_from_domain(0x00000000, 0x00000078));
 
 ?>
