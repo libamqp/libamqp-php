@@ -26,7 +26,7 @@ class message_annotations extends annotations
 	/**
 	 * @param array $annotations An associative array of string keys pointing to simple Value instances
 	 */
-	public function __construct(array $annotations)
+	public function __construct(array $annotations = array())
 	{
 		parent::__construct($annotations);
 	}

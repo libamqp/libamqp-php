@@ -57,6 +57,14 @@ class modified extends outcome
 				throw new BadMethodCallException("too many function arguments");
 		}
 	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return parent::toString(__CLASS__);
+	}
 }
 
 require_once('symbol.php');

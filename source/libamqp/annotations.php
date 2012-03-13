@@ -30,7 +30,7 @@ abstract class annotations extends CompositeType implements section
 	/**
 	 * @param array $annotations
 	 */
-	public function __construct(array $annotations)
+	public function __construct(array $annotations = array())
 	{
 		parent::__construct();
 		$this->value = new map();

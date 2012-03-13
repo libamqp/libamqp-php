@@ -26,7 +26,7 @@
 
 namespace libamqp;
 
-use \InvalidArgumentException;
+use \InvalidArgumentException, \BadFunctionCallException;
 
 require_once('Value.php');
 require_once('null.php');
@@ -79,47 +79,9 @@ require_once('released.php');
 require_once('modified.php');
 require_once('modified.php');
 
-
-/**
- * Use an instance of this as a callback for at-least-once and exactly-once messaging
- *
- * @category Networking
- * @package libamqp
- * @author Raphael Cohn <raphael.cohn@stormmq.com>
- * @author Eamon Walshe <eamon.walshe@stormmq.com>
- * @copyright 2012 Raphael Cohn and Eamon Walshe
- * @license http://www.apache.org/licenses/LICENSE-2.0.html  Apache License, Version 2.0
- * @version Release: @package_version@
- */
-abstract class sender_settlement
-{
-	const sender_settle_mode_unsettled = 0;
-	const sender_settle_mode_settled = 1;
-	const sender_settle_mode_mixed = 2;
-
-	const receiver_settle_mode_first = TRUE;
-	const receiver_settle_mode_second = FALSE;
-
-	private $exactly_once;
-
-	/**
-	 * @param bool $exactly_once if specified, exactly-once messaging is used and (for simplicity) the send mirrors the receiver's outcome
-	 */
-	public function __construct($exactly_once = FALSE)
-	{
-		if (!is_bool($exactly_once))
-		{
-			throw new InvalidArgumentException("exactly_once must be a boolean");
-		}
-		$this->exactly_once = $exactly_once;
-	}
-
-	/**
-	 * @abstract
-	 * @param delivery_state $delivery_state
-	 */
-	public abstract function called_back(delivery_state &$delivery_state);
-}
+define('LIBAMQP_DELIVERY_MODE_AT_MOST_ONCE', 0);
+define('LIBAMQP_DELIVERY_MODE_AT_LEAST_ONCE', 1);
+define('LIBAMQP_DELIVERY_MODE_EXACTLY_ONCE', 2);
 
 /**
  * Represents an AMQP Message Format data application-data section
@@ -138,8 +100,11 @@ abstract class sender_settlement
  * @param annotations|NULL $message_annotations
  * @param properties|NULL $properties
  * @param application_properties|NULL $application_properties
+ * @param array|NULL $footer_callbacks An array of callbacks
+ * @param bool|constant("LIBAMQP_SEND_AT_MOST_ONCE") $exactly_once
+ * @param callback|NULL $delivery_state_callback
  */
-function send($application_data, header &$header = NULL, delivery_annotations &$delivery_annotations = NULL, message_annotations &$message_annotations = NULL, properties &$properties = NULL, application_properties &$application_properties = NULL, $exactly_once = FALSE, $delivery_state_callback = NULL)
+function send($application_data, header $header = NULL, delivery_annotations $delivery_annotations = NULL, message_annotations $message_annotations = NULL, properties $properties = NULL, application_properties $application_properties = NULL, array $footer_callbacks = array(), $delivery_mode = 0, $delivery_state_callback = NULL)
 {
 	if (is_null($application_data))
 	{
@@ -196,12 +161,45 @@ function send($application_data, header &$header = NULL, delivery_annotations &$
 	}
 	else
 	{
-		throw new InvalidArgumentException("application_data must be either NULL (maps to libamqp\null), int (maps to AmqpLong) bool (maps to AmqpBoolean,) string (a byte array), Value or an array of application_data");
+		throw new InvalidArgumentException('application_data must be either NULL (maps to libamqp\null), int (maps to long) bool (maps to boolean) string (a byte array), Value or an array of application_data');
 	}
 
-	if ($exactly_once && is_null($delivery_state_callback))
+	if (is_null($delivery_state_callback))
 	{
-		throw new InvalidArgumentException("exactly_once is TRUE but there is no delivery_state_callback");
+		if ($delivery_mode != constant("LIBAMQP_DELIVERY_MODE_AT_MOST_ONCE"))
+		{
+			throw new InvalidArgumentException("delivery_mode is $delivery_mode but there is no delivery_state_callback");
+		}
+	}
+	else
+	{
+		if (!is_callable($delivery_state_callback))
+		{
+			throw new InvalidArgumentException("delivery_state_callback is not a callback but $delivery_state_callback");
+		}
+		if ($delivery_mode == constant('LIBAMQP_DELIVERY_MODE_AT_MOST_ONCE'))
+		{
+			throw new InvalidArgumentException("delivery_mode is LIBAMQP_DELIVERY_MODE_AT_MOST_ONCE but there is a delivery_state_callback, $delivery_state_callback");
+		}
+	}
+
+	if (count($footer_callbacks) > 0)
+	{
+		$fake_enconded_binary_string = c_footer_encode($properties, $application_properties, $applicationDataSections);
+		$footer = new footer();
+
+		foreach($footer_callbacks as $footer_callback)
+		{
+			if (!is_callable($footer_callback))
+			{
+				throw new InvalidArgumentException("a footer_callback is not a callback but $footer_callback");
+			}
+			call_user_func($footer_callback, &$footer, $fake_enconded_binary_string);
+		}
+	}
+	else
+	{
+		$footer = NULL;
 	}
 
 	/*
@@ -210,17 +208,7 @@ function send($application_data, header &$header = NULL, delivery_annotations &$
 	 *  - presence of settlement object is used as hint to whether to use first or second
 	 */
 
-	//XXXXXX Implement this XXXXXX
-
-	/*
-	 * Settlement:-
-	 * 	- presence of settlement object is used
-	 *    - if link does not support settlement object, then throw an exception
-	 */
-
-
-
-	echo "Sending Message\n";
+	echo "\nSending Message\n";
 	echo "header: $header\n";
 	echo "delivery-annotations: $delivery_annotations\n";
 	echo "message-annotations: $message_annotations\n";
@@ -230,7 +218,48 @@ function send($application_data, header &$header = NULL, delivery_annotations &$
 	{
 		echo "application-data: $applicationDataSection\n";
 	}
-	echo "footer: \n\n";
+	echo "footer: $footer\n";
+
+	if (isset($delivery_state_callback))
+	{
+		$delivery_state = new accepted();
+		echo "Receiving delivery-state $delivery_state\n";
+		$result = call_user_func($delivery_state_callback, &$delivery_state);
+		if ($delivery_mode == constant('LIBAMQP_DELIVERY_MODE_EXACTLY_ONCE'))
+		{
+			if (is_null($result))
+			{
+				$result = new accepted();
+			}
+			c_settle_exactly_once($result);
+		}
+		else
+		{
+			if (isset($result))
+			{
+				throw new BadFunctionCallException("delivery_mode is LIBAMQP_DELIVERY_MODE_AT_LEAST_ONCE but callback $delivery_state_callback returned $result and not NULL");
+			}
+		}
+	}
 }
 
+/**
+ * @param properties|null $properties
+ * @param application_properties|null $application_properties
+ * @param array $applicationDataSections
+ * @return string
+ */
+function c_footer_encode(properties $properties = NULL, application_properties $application_properties = NULL, array $applicationDataSections)
+{
+	echo "Fake Encoding of Message\n";
+	return "fake encoded data";
+}
+
+/**
+ * @param outcome $outcome
+ */
+function c_settle_exactly_once(outcome &$outcome)
+{
+	echo "Settled with outcome: $outcome\n";
+}
 ?>

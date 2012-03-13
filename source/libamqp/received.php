@@ -65,6 +65,14 @@ class received extends KnownListCompositeType implements delivery_state
 		return FALSE;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return parent::toString(__CLASS__);
+	}
+
 }
 
 require_once('symbol.php');

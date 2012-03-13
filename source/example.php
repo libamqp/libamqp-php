@@ -5,6 +5,7 @@ require_once('libamqp/libamqp.php');
 use \libamqp\ushort, \libamqp\boolean, \libamqp\string, \libamqp\binary, \libamqp\timestamp, \libamqp\ubyte, \libamqp\uint, \libamqp\byte, \libamqp\char;
 use \libamqp\header, \libamqp\delivery_annotations, \libamqp\message_annotations, \libamqp\properties, \libamqp\application_properties;
 use \libamqp\data, \libamqp\amqp_value, \libamqp\amqp_sequence;
+use \libamqp\footer, \libamqp\delivery_state, \libamqp\outcome, \libamqp\received;
 
 /*
 	1 Creates a connection shared globally if none exists
@@ -101,13 +102,13 @@ libamqp\send($amqp_data_sections);
 
 /*
 	1 (Restablishes connection, session or link if necessary)
-	2 Sends header(durable=true, priority=6) and binary message
+	2 Sends header and binary message
 */
 libamqp\send("messsage", new header(true, 6));
 
 /*
 	1 (Restablishes connection, session or link if necessary)
-	2 Sends header(durable=true, priority=6), delivery-annotations, message-annotations, properties, application-properties and binary message
+	2 Sends header, delivery-annotations, message-annotations, properties, application-properties and binary message
 */
 libamqp\send
 (
@@ -152,4 +153,94 @@ libamqp\send
 		"my-key-2" => boolean::FALSE()
 	))
 );
+
+
+/*
+	1 (Restablishes connection, session or link if necessary)
+	2 Sends binary message and uses an array of callbacks to create the footer
+*/
+$footer_callbacks = array
+(
+	function(footer &$footer, $encoded_data_binary_string)
+	{
+		$footer->set('x-hash-sha1', new binary(sha1($encoded_data_binary_string, TRUE)));
+		$footer->set('x-hash-md5', new binary(md5($encoded_data_binary_string, TRUE)));
+	},
+	function(footer &$footer, $encoded_data_binary_string)
+	{
+		$key = 'fsfsfsfsfs342534534';
+		$footer->set('x-hmac-sha256', new binary(hash_hmac('sha256', $encoded_data_binary_string, $key, TRUE)));
+	},
+);
+libamqp\send("message", NULL, NULL, NULL, NULL, NULL, $footer_callbacks);
+
+
+/*
+	1 (Restablishes connection, session or link if necessary)
+	2 Sends binary message using at-least-once messaging
+*/
+$delivery_state_callback = function(delivery_state &$delivery_state)
+{
+	if (!($delivery_state instanceof outcome))
+	{
+		return;
+	}
+	$outcome = $delivery_state;
+	switch(get_class($outcome))
+	{
+		case 'libamqp\accepted':
+
+			break;
+
+		case 'libamqp\rejected':
+
+			break;
+
+		case 'libamqp\released':
+
+			break;
+
+		case 'libamqp\modified':
+
+			break;
+
+		default:
+			throw new BadFunctionCallException("Unknown outcome class $delivery_state");
+	}
+};
+libamqp\send("message", NULL, NULL, NULL, NULL, NULL, array(), constant('LIBAMQP_DELIVERY_MODE_AT_LEAST_ONCE'), $delivery_state_callback);
+
+
+/*
+	1 (Restablishes connection, session or link if necessary)
+	2 Sends binary message using exactly-once messaging, and mirrors the receiver's outcome (for simplicity)
+*/
+$delivery_state_callback = function(delivery_state &$delivery_state)
+{
+	if (!($delivery_state instanceof outcome))
+	{
+		return NULL;
+	}
+	$outcome = $delivery_state;
+	switch(get_class($outcome))
+	{
+		case 'libamqp\accepted':
+			return $delivery_state;
+
+		case 'libamqp\rejected':
+			return $delivery_state;
+
+		case 'libamqp\released':
+			return $delivery_state;
+
+		case 'libamqp\modified':
+			return $delivery_state;
+
+		default:
+			throw new BadFunctionCallException("Unknown outcome class $delivery_state");
+	}
+};
+libamqp\send("message", NULL, NULL, NULL, NULL, NULL, array(), constant('LIBAMQP_DELIVERY_MODE_EXACTLY_ONCE'), $delivery_state_callback);
+
+
 ?>
